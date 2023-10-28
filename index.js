@@ -43,9 +43,37 @@ async function run() {
       const result = await servicesCollection.findOne(query);
       res.send(result);
     });
+    app.get("/cartDetails", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await cartsCollection.find(query).toArray();
+      res.send(result);
+    });
     app.post("/cartDetails", async (req, res) => {
       const carts = req.body;
       const result = await cartsCollection.insertOne(carts);
+      res.send(result);
+    });
+
+    app.patch("/cartDetails/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateCart = req.body;
+      const updateDoc = {
+        $set: {
+          status: updateCart.status,
+        },
+      };
+      const result = await cartsCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
+    app.delete("/cartDetails/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartsCollection.deleteOne(query);
       res.send(result);
     });
 
